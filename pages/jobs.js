@@ -6,7 +6,7 @@ import Loading from "../components/Loading";
 import { fetchJobs } from "../store/jobs/jobsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCompany } from "../store/tempStorage/tempStorageSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import en from "../locales/en";
 import ar from "../locales/ar";
@@ -14,6 +14,8 @@ import ar from "../locales/ar";
 function JobFinder() {
   const jobs = useSelector((state) => state.jobs.jobs);
   const companies = useSelector((state) => state.tempStorage.company);
+  const [filteredJobs, setFilteredJobs] = useState(jobs);
+  const [isSearchEmpty, setIsSearchEmpty] = useState(true);
   const dispatch = useDispatch();
   const Router = useRouter();
   const { locale } = Router;
@@ -23,6 +25,19 @@ function JobFinder() {
     dispatch(fetchJobs());
     dispatch(fetchCompany());
   }, [dispatch]);
+
+  const handleSearchSubmit = (searchValue) => {
+    if (searchValue === "") {
+      setIsSearchEmpty(true);
+    }
+
+    const filterResult = jobs.filter((job) =>
+      job.position.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    setFilteredJobs(filterResult);
+    setIsSearchEmpty(false);
+  };
 
   if (!jobs || !companies) return <Loading />;
 
@@ -34,7 +49,7 @@ function JobFinder() {
             <h1 className="text-primary text-4xl mb-1">{t.jobs.JobsFider}</h1>
             <h2 className="text-secondary">{t.jobs.JobsFinerDesc}</h2>
             <div className="mt-5">
-              <SearchButton />
+              <SearchButton onSearchSubmit={handleSearchSubmit} />
             </div>
           </div>
         </div>
@@ -55,28 +70,40 @@ function JobFinder() {
             ChooseAllThatApplies={t.jobs.ChooseAllThatApplies}
           />
         </div>
-
         <div className="bg-body col-span-2">
           <div className="pl-8 lg:pr-48 w-full py-10 ">
             {" "}
             <div className="flex justify-between mb-5">
               <p>
-                {t.jobs.Total} {jobs.length} {t.jobs.Results}
+                {t.jobs.Total}{" "}
+                {isSearchEmpty ? jobs.length : filteredJobs.length}{" "}
+                {t.jobs.Results}
               </p>
               <p>{t.jobs.SortBy}</p>
             </div>
-            {jobs.map((jobsData, index) => {
-              // console.log(jobsData);
-              const company = companies.filter(
-                (item) => item.id === jobsData.company_id
-              );
+            {isSearchEmpty
+              ? jobs.map((jobsData, index) => {
+                  const company = companies.filter(
+                    (item) => item.id === jobsData.company_id
+                  );
 
-              return (
-                <div key={index}>
-                  <JobListing job={jobsData} company={company[0]} />
-                </div>
-              );
-            })}
+                  return (
+                    <div key={index}>
+                      <JobListing job={jobsData} company={company[0]} />
+                    </div>
+                  );
+                })
+              : filteredJobs.map((jobsData, index) => {
+                  const company = companies.filter(
+                    (item) => item.id === jobsData.company_id
+                  );
+
+                  return (
+                    <div key={index}>
+                      <JobListing job={jobsData} company={company[0]} />
+                    </div>
+                  );
+                })}
           </div>
         </div>
       </div>
