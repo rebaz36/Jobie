@@ -151,27 +151,12 @@ export default function Aboutus() {
           <span className="text-primary"> {t.about.MeetOurTeam1} </span>{" "}
           <span className="text-accent">{t.about.MeetOurTeam2}</span>
         </h1>
-        <div className="flex justify-between pb-20">
-          <TeamProfile
-            name={t.about.Zahraa}
-            pic={Zahraa}
-            role={t.about.ZahraRole}
-          />
-          <TeamProfile
-            name={t.about.Wisam}
-            pic={Wisam}
-            role={t.about.WisamRole}
-          />
+        <div className="flex justify-center pb-20">
           <TeamProfile
             name={t.about.Rebaz}
             pic={Rebaz}
             role={t.about.RebazRole}
           />
-        </div>
-        <div className="grid grid-cols-3 place-items-center">
-          <TeamProfile name={t.about.Aya} pic={Aya} role={t.about.AyaRole} />
-          <TeamProfile name={t.about.Bnar} pic={Bnar} role={t.about.BnarRole} />
-          <TeamProfile name={t.about.Lara} pic={Lara} role={t.about.LaraRole} />
         </div>
 
         <h1 className="text-4xl xl:text-6xl font-semibold text-center pt-20 pb-16 ">
